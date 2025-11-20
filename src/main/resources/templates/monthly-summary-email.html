@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Monthly Financial Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .summary-card {
+            background-color: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .positive {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .negative {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .budget-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .on-track {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        .exceeded {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .footer {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Your Monthly Financial Summary</h1>
+        <p th:text="'For ' + ${month} + ' ' + ${year}"></p>
+    </div>
+    
+    <div class="summary-card">
+        <h3>💰 Financial Overview</h3>
+        <p><strong>Total Income:</strong> $<span th:text="${#numbers.formatDecimal(totalIncome, 1, 2)}"></span></p>
+        <p><strong>Total Expenses:</strong> $<span th:text="${#numbers.formatDecimal(totalExpenses, 1, 2)}"></span></p>
+        <p>
+            <strong>Net Savings:</strong> 
+            <span th:class="${netSavings >= 0} ? 'positive' : 'negative'" 
+                  th:text="'$' + ${#numbers.formatDecimal(netSavings, 1, 2)}"></span>
+        </p>
+    </div>
+    
+    <div class="summary-card" th:if="${not #lists.isEmpty(budgetStatus)}">
+        <h3>🎯 Budget Performance</h3>
+        <div th:each="budget : ${budgetStatus}">
+            <div th:class="${budget.utilization < 80} ? 'budget-status on-track' : 
+                           ${budget.utilization < 100} ? 'budget-status warning' : 
+                           'budget-status exceeded'}">
+                <strong th:text="${budget.category}"></strong><br>
+                Budget: $<span th:text="${#numbers.formatDecimal(budget.amount, 1, 2)}"></span> | 
+                Spent: $<span th:text="${#numbers.formatDecimal(budget.spent, 1, 2)}"></span> | 
+                Utilization: <span th:text="${#numbers.formatDecimal(budget.utilization, 1, 2)}"></span>%
+            </div>
+        </div>
+    </div>
+    
+    <div class="summary-card" th:if="${not #lists.isEmpty(topCategories)}">
+        <h3>📈 Top Spending Categories</h3>
+        <div th:each="category : ${topCategories}">
+            <p>
+                <strong th:text="${category.name}"></strong>: 
+                $<span th:text="${#numbers.formatDecimal(category.amount, 1, 2)}"></span>
+                (<span th:text="${category.percentage}"></span>%)
+            </p>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <h3>💡 Insights & Recommendations</h3>
+        <div th:if="${netSavings >= 0}">
+            <p class="positive">🎉 Great job! You're saving money this month.</p>
+            <p>Consider increasing your savings rate or investing the surplus.</p>
+        </div>
+        <div th:if="${netSavings < 0}">
+            <p class="negative">📉 You spent more than you earned this month.</p>
+            <p>Review your top spending categories for potential reductions.</p>
+        </div>
+        
+        <div th:if="${exceededBudgets > 0}">
+            <p>⚠️ You exceeded <span th:text="${exceededBudgets}"></span> budget(s). Consider adjusting them for next month.</p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin: 20px 0;">
+        <a href="http://localhost:8080/dashboard" style="background-color: #667eea; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px;">
+            View Detailed Dashboard
+        </a>
+    </div>
+    
+    <div class="footer">
+        <p>This is your automated monthly summary from SmartSpend.</p>
+        <p>Keep tracking for better financial health! 💪</p>
+    </div>
+</body>
+</html>

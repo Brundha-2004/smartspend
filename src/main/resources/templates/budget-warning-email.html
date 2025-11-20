@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Warning</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚠️ Budget Warning</h1>
+    </div>
+    
+    <div class="content">
+        <div class="warning">
+            <h3>You're approaching your budget limit for <span th:text="${category}"></span></h3>
+        </div>
+        
+        <p>Hello SmartSpend user,</p>
+        
+        <p>You've used <strong th:text="${utilization}"></strong>% of your <strong th:text="${category}"></strong> budget. 
+           You're getting close to your spending limit!</p>
+        
+        <div style="background-color: white; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107;">
+            <p><strong>Budget Amount:</strong> $<span th:text="${#numbers.formatDecimal(budgetAmount, 1, 2)}"></span></p>
+            <p><strong>Current Utilization:</strong> <span style="color: #e67e22;" th:text="${utilization}"></span>%</p>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            <strong>Tips to stay on track:</strong><br>
+            • Monitor your daily spending in this category<br>
+            • Consider if upcoming expenses can be postponed<br>
+            • Review your budget allocation if this happens frequently
+        </p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated alert from SmartSpend.</p>
+        <p>Keep up the good work managing your finances! 💪</p>
+    </div>
+</body>
+</html>
