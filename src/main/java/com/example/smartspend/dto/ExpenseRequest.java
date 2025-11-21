@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Positive;
 public class ExpenseRequest {
     @NotBlank
     private String title;
+    
     @NotNull
     @Positive
     private Double amount;
@@ -27,7 +28,6 @@ public class ExpenseRequest {
 
     private String description;
 
-    // Getters and Setters
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 

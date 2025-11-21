@@ -24,8 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
         
-        // Use name() instead of toString() for enum
-        String role = user.getRole().name(); // Fixed: removed "UserRole" and added semicolon
+        String role = user.getRole().name();
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
         
         return new org.springframework.security.core.userdetails.User(

@@ -40,7 +40,6 @@ public class Budget {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Constructors, Getters and Setters
     public Budget() {}
 
     public Budget(Category category, Double amount, Integer month, Integer year) {
@@ -50,7 +49,6 @@ public class Budget {
         this.year = year;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

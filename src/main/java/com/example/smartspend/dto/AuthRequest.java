@@ -13,7 +13,6 @@ public class AuthRequest {
     @Size(min = 6)
     private String password;
 
-    // Getters and Setters
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 

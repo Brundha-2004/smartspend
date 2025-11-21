@@ -65,12 +65,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Budget> budgets = new ArrayList<>();
 
-    // Make sure this Role enum is PUBLIC
     public enum Role {
         ROLE_USER, ROLE_ADMIN
     }
 
-    // Constructors, Getters and Setters
     public User() {}
 
     public User(String email, String password, String firstName, String lastName) {
@@ -80,7 +78,6 @@ public class User {
         this.lastName = lastName;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

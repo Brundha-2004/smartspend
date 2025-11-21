@@ -17,7 +17,6 @@ public class BudgetStatus {
         this.utilization = utilization;
     }
     
-    // Getters and Setters
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
     

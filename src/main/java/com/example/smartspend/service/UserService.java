@@ -7,12 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.smartspend.entity.User;
 import com.example.smartspend.repository.UserRepository;
 
 @Service
-@SuppressWarnings("null")
+@Transactional
 public class UserService {
     
     @Autowired
@@ -35,7 +36,6 @@ public class UserService {
         
         User savedUser = userRepository.save(user);
         
-        // Send verification email
         emailService.sendVerificationEmail(user.getEmail(), user.getVerificationToken());
         
         return savedUser;
@@ -61,4 +61,12 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+    
+    // ADD THIS MISSING METHOD
+    public boolean checkPassword(@NonNull String rawPassword, @NonNull String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+    public User updateUser(User user) {
+    return userRepository.save(user);
+}
 }

@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.JwtException;
@@ -15,28 +14,26 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
     
-    @Value("${app.jwt.secret}")
-    private String secret;
+    private final SecretKey secretKey;
+    private final long expirationMs = 86400000; // 24 hours
     
-    @Value("${app.jwt.expiration}")
-    private Long expiration;
-    
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+    public JwtUtil() {
+        // In production, use a secure key from configuration
+        this.secretKey = Keys.hmacShaKeyFor("mySecretKey123456789012345678901234567890".getBytes());
     }
     
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
     
     public String extractEmail(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -46,12 +43,25 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+    
+    public Date extractExpiration(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+    }
+    
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }

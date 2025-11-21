@@ -50,7 +50,6 @@ public class Expense {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Constructors, Getters and Setters
     public Expense() {}
 
     public Expense(String title, Double amount, Category category, TransactionType type, LocalDate date, String description) {
@@ -62,7 +61,6 @@ public class Expense {
         this.description = description;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

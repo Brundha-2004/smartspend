@@ -5,7 +5,6 @@ public class CategorySpending {
     private Double amount;
     private Double percentage;
     
-    // Constructors
     public CategorySpending() {}
     
     public CategorySpending(String name, Double amount, Double percentage) {
@@ -14,7 +13,6 @@ public class CategorySpending {
         this.percentage = percentage;
     }
     
-    // Getters and Setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     

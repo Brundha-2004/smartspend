@@ -41,4 +41,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                                            @Param("category") Category category,
                                            @Param("year") int year, 
                                            @Param("month") int month);
+    
+    // ADD THIS MISSING METHOD
+    List<Expense> findByUserIdAndCategoryAndDateBetween(Long userId, Category category, LocalDate startDate, LocalDate endDate);
 }

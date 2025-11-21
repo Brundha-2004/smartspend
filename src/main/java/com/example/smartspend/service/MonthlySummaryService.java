@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.smartspend.entity.Budget;
 import com.example.smartspend.entity.Category;
@@ -18,7 +19,7 @@ import com.example.smartspend.repository.BudgetRepository;
 import com.example.smartspend.repository.ExpenseRepository;
 
 @Service
-@SuppressWarnings("null")
+@Transactional
 public class MonthlySummaryService {
     
     @Autowired
@@ -34,14 +35,11 @@ public class MonthlySummaryService {
     private UserService userService;
     
     public void generateAndSendMonthlySummary(@NonNull Long userId, int month, int year) {
-        // Calculate date range
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
         
-        // Get expenses for the month
         List<Expense> monthlyExpenses = expenseRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
         
-        // Calculate totals
         Double totalIncome = monthlyExpenses.stream()
                 .filter(e -> e.getType().name().equals("INCOME"))
                 .mapToDouble(Expense::getAmount)
@@ -52,7 +50,6 @@ public class MonthlySummaryService {
                 .mapToDouble(Expense::getAmount)
                 .sum();
         
-        // Get budget status
         List<Budget> monthlyBudgets = budgetRepository.findByUserIdAndMonthAndYear(userId, month, year);
         List<EmailService.BudgetStatus> budgetStatusList = new ArrayList<>();
         
@@ -69,7 +66,6 @@ public class MonthlySummaryService {
             ));
         }
         
-        // Calculate top spending categories
         Map<Category, Double> categorySpending = monthlyExpenses.stream()
                 .filter(e -> e.getType().name().equals("EXPENSE"))
                 .collect(Collectors.groupingBy(
@@ -86,10 +82,9 @@ public class MonthlySummaryService {
                     totalSpending > 0 ? (entry.getValue() / totalSpending) * 100 : 0.0
                 ))
                 .sorted((a, b) -> Double.compare(b.getAmount(), a.getAmount()))
-                .limit(5) // Top 5 categories
+                .limit(5)
                 .collect(Collectors.toList());
         
-        // Get user email first, then send email
         User user = userService.findById(userId);
         emailService.sendMonthlySummaryEmail(user.getEmail(), month, year, totalIncome, totalExpenses, 
                                            budgetStatusList, topCategories);

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSpend - Home</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 20px; padding: 40px; margin-bottom: 30px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); text-align: center;
+        }
+        .logo { font-size: 3rem; font-weight: bold; color: #667eea; margin-bottom: 10px; }
+        .tagline { font-size: 1.2rem; color: #666; margin-bottom: 30px; }
+        .nav-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn { 
+            padding: 12px 30px; border: none; border-radius: 50px; font-size: 1rem; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; 
+            display: inline-block; 
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-secondary { background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea; }
+        .btn-success { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #f5576c, #f093fb); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ff9800, #f57c00); color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 40px; }
+        .feature-card { 
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 30px; 
+            text-align: center; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon { font-size: 3rem; margin-bottom: 15px; }
+        .feature-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; color: #333; }
+        .feature-description { color: #666; line-height: 1.6; }
+        .status-bar { 
+            background: rgba(255, 255, 255, 0.9); border-radius: 10px; padding: 15px; 
+            margin-top: 30px; text-align: center; font-size: 0.9rem; color: #666;
+        }
+        .user-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .welcome-text {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+        .alert-success {
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            color: #2e7d32;
+        }
+        .alert-info {
+            background: #e3f2fd;
+            border: 1px solid #2196F3;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💸 SmartSpend</div>
+            <div class="tagline">Take Control of Your Finances, Smarter</div>
+            <div class="nav-buttons">
+                <a th:href="@{/}" class="btn btn-primary">Home</a>
+                <a th:href="@{/info}" class="btn btn-secondary">API Info</a>
+                <a th:href="@{/public/health}" class="btn btn-secondary">Health Check</a>
+                <a th:href="@{/budgets/view}" class="btn btn-warning">💰 Budgets</a>
+                <a th:href="@{/expenses/view}" class="btn btn-warning">📊 Expenses</a>
+                <a th:href="@{/auth/login}" class="btn btn-success">Sign In</a>
+                <a th:href="@{/auth/register}" class="btn btn-danger">Get Started</a>
+            </div>
+        </div>
+
+        <!-- Success Messages -->
+        <div th:if="${param.login}" class="alert alert-success">
+            ✅ Login successful! Welcome to SmartSpend.
+        </div>
+        <div th:if="${param.registered}" class="alert alert-success">
+            ✅ Registration successful! You can now log in to your account.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-info">
+            🔒 You have been logged out successfully.
+        </div>
+
+        <!-- User Welcome Section (visible when logged in) -->
+        <div th:if="${user}" class="user-section">
+            <div class="welcome-text">
+                Welcome back, <span th:text="${user.firstName}">User</span>!
+            </div>
+            
+            <!-- Quick Stats for Logged-in Users -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${budgetCount ?: '0'}">0</div>
+                    <div class="stat-label">Active Budgets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${expenseCount ?: '0'}">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="'$' + ${totalSaved ?: '0'}">$0</div>
+                    <div class="stat-label">Total Saved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${goalsCount ?: '0'}">0</div>
+                    <div class="stat-label">Goals Set</div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a th:href="@{/dashboard}" class="btn btn-primary">📈 Dashboard</a>
+                <a th:href="@{/expenses/view}" class="btn btn-success">💰 Expenses</a>
+                <a th:href="@{/budgets/view}" class="btn btn-warning">📊 Budgets</a>
+                <a th:href="@{/reports}" class="btn btn-secondary">📋 Reports</a>
+                <a th:href="@{/auth/logout}" class="btn btn-danger">🚪 Logout</a>
+            </div>
+        </div>
+
+        <!-- Guest User Section -->
+        <div th:unless="${user}" class="user-section">
+            <div class="welcome-text">
+                Ready to take control of your finances?
+            </div>
+            <div class="nav-buttons">
+                <a th:href="@{/auth/register}" class="btn btn-danger" style="font-size: 1.1rem; padding: 15px 40px;">
+                    🚀 Start Your Financial Journey
+                </a>
+                <a th:href="@{/auth/login}" class="btn btn-success" style="font-size: 1.1rem; padding: 15px 40px;">
+                    🔑 Sign In to Your Account
+                </a>
+            </div>
+            <p style="margin-top: 20px; color: #666; font-size: 0.9rem;">
+                Or explore our features as a guest:
+            </p>
+            <div class="nav-buttons" style="margin-top: 15px;">
+                <a th:href="@{/budgets/view}" class="btn btn-secondary">View Budgets Demo</a>
+                <a th:href="@{/expenses/view}" class="btn btn-secondary">View Expenses Demo</a>
+                <a th:href="@{/info}" class="btn btn-secondary">API Documentation</a>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Expense Tracking</div>
+                <div class="feature-description">
+                    Monitor your spending habits with detailed analytics and visual reports. 
+                    Categorize expenses and get insights into your financial behavior.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Budget Planning</div>
+                <div class="feature-description">
+                    Set financial goals and track your progress with smart budget planning. 
+                    Get alerts when you're approaching your limits.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <div class="feature-title">Financial Reports</div>
+                <div class="feature-description">
+                    Generate comprehensive reports and visualize your financial data 
+                    with interactive charts and graphs.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Secure & Private</div>
+                <div class="feature-description">
+                    Your financial data is protected with bank-level security encryption. 
+                    We never share your personal information.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Multi-Device Sync</div>
+                <div class="feature-description">
+                    Access your financial data from any device. Your information syncs 
+                    seamlessly across all your platforms.
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">Savings Goals</div>
+                <div class="feature-description">
+                    Set and track savings goals for big purchases, vacations, or emergency funds. 
+                    Watch your progress grow over time.
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action Section -->
+        <div class="user-section" th:unless="${user}">
+            <div class="welcome-text" style="font-size: 2rem; margin-bottom: 10px;">
+                Ready to Transform Your Finances?
+            </div>
+            <p style="color: #666; margin-bottom: 30px; font-size: 1.1rem;">
+                Join thousands of users who have already taken control of their financial future with SmartSpend.
+            </p>
+            <div class="nav-buttons">
+                <a th:href="@{/auth/register}" class="btn btn-danger" style="font-size: 1.2rem; padding: 18px 50px;">
+                    🎉 Create Free Account
+                </a>
+            </div>
+            <p style="margin-top: 20px; color: #888; font-size: 0.9rem;">
+                No credit card required • 30-day free trial • Cancel anytime
+            </p>
+        </div>
+
+        <div class="status-bar">
+            <strong>Status:</strong> <span th:text="${status}">Loading...</span> | 
+            <strong>Port:</strong> <span th:text="${port}">8080</span> | 
+            <strong>Time:</strong> <span id="timestamp"></span> |
+            <strong>Users:</strong> <span th:text="${userCount ?: '0'}">0</span> registered
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Add some interactive features
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+                this.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.15)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            });
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

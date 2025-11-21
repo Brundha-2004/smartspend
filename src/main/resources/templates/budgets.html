@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSpend - Budget Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 20px; padding: 30px; margin-bottom: 25px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .logo { font-size: 2rem; font-weight: bold; color: #667eea; margin-bottom: 10px; }
+        .nav-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+        .btn { 
+            padding: 10px 20px; border: none; border-radius: 10px; font-size: 0.9rem; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; 
+            display: inline-block; 
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-secondary { background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea; }
+        .btn-success { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #f5576c, #f093fb); color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+
+        .content-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .budget-form, .budgets-list {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .budget-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: transform 0.2s ease;
+        }
+
+        .budget-card:hover {
+            transform: translateX(5px);
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .budget-category {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .budget-amount {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .budget-period {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .budget-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #363;
+        }
+
+        .alert-error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💰 Budget Management</div>
+            <div class="nav-buttons">
+                <a th:href="@{/}" class="btn btn-secondary">🏠 Home</a>
+                <a th:href="@{/expenses}" class="btn btn-secondary">📊 Expenses</a>
+                <a th:href="@{/budgets}" class="btn btn-primary">💰 Budgets</a>
+                <a th:href="@{/auth/login}" class="btn btn-secondary">🔐 Login</a>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" th:text="${totalBudgets ?: '0'}">0</div>
+                <div class="stat-label">Total Budgets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" th:text="${totalAmount ?: '0'}">$0</div>
+                <div class="stat-label">Total Budget Amount</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" th:text="${activeBudgets ?: '0'}">0</div>
+                <div class="stat-label">Active Budgets</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <!-- Create Budget Form -->
+            <div class="budget-form">
+                <div class="section-title">Create New Budget</div>
+                <form id="createBudgetForm">
+                    <div class="form-group">
+                        <label class="form-label" for="category">Category</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="FOOD">Food & Dining</option>
+                            <option value="TRANSPORTATION">Transportation</option>
+                            <option value="ENTERTAINMENT">Entertainment</option>
+                            <option value="SHOPPING">Shopping</option>
+                            <option value="HEALTHCARE">Healthcare</option>
+                            <option value="BILLS">Bills & Utilities</option>
+                            <option value="GROCERIES">Groceries</option>
+                            <option value="TRAVEL">Travel</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="amount">Budget Amount ($)</label>
+                        <input type="number" id="amount" name="amount" class="form-input" 
+                               placeholder="Enter budget amount" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="month">Month</label>
+                        <select id="month" name="month" class="form-select" required>
+                            <option value="">Select Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="year">Year</label>
+                        <input type="number" id="year" name="year" class="form-input" 
+                               placeholder="2024" min="2020" max="2030" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success" style="width: 100%;">
+                        Create Budget
+                    </button>
+                </form>
+            </div>
+
+            <!-- Budgets List -->
+            <div class="budgets-list">
+                <div class="section-title">Your Budgets</div>
+                <div id="budgetsContainer">
+                    <!-- Budgets will be loaded here dynamically -->
+                    <div class="budget-card" th:each="budget : ${budgets}">
+                        <div class="budget-header">
+                            <div class="budget-category" th:text="${budget.category}">Category</div>
+                            <div class="budget-amount" th:text="'$' + ${#numbers.formatDecimal(budget.amount, 1, 2)}">$0.00</div>
+                        </div>
+                        <div class="budget-period" th:text="'Period: ' + ${budget.month} + '/' + ${budget.year}">
+                            Period: Month/Year
+                        </div>
+                        <div class="budget-actions">
+                            <button class="btn btn-secondary btn-small" 
+                                    th:onclick="'editBudget(' + ${budget.id} + ')'">Edit</button>
+                            <button class="btn btn-danger btn-small" 
+                                    th:onclick="'deleteBudget(' + ${budget.id} + ')'">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${budgets == null || budgets.empty}" style="text-align: center; color: #666; padding: 40px;">
+                    No budgets found. Create your first budget!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById('createBudgetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                category: document.getElementById('category').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                month: parseInt(document.getElementById('month').value),
+                year: parseInt(document.getElementById('year').value)
+            };
+
+            fetch('/budgets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Budget created successfully!');
+                location.reload(); // Reload to show new budget
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating budget');
+            });
+        });
+
+        // Delete budget function
+        function deleteBudget(budgetId) {
+            if (confirm('Are you sure you want to delete this budget?')) {
+                fetch(`/budgets/${budgetId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Budget deleted successfully!');
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting budget');
+                });
+            }
+        }
+
+        // Edit budget function (placeholder)
+        function editBudget(budgetId) {
+            alert('Edit functionality for budget ID: ' + budgetId);
+            // You can implement edit modal or redirect to edit page
+        }
+
+        // Set current year as default
+        document.getElementById('year').value = new Date().getFullYear();
+        document.getElementById('month').value = new Date().getMonth() + 1;
+    </script>
+</body>
+</html>

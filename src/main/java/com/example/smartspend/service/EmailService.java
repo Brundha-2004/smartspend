@@ -3,6 +3,7 @@ package com.example.smartspend.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,7 +18,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
-@SuppressWarnings("null")
 public class EmailService {
     
     @Autowired
@@ -26,32 +26,53 @@ public class EmailService {
     @Autowired
     private TemplateEngine templateEngine;
     
-    // No UserService dependency
+    @Value("${app.email.enabled:false}")
+    private boolean emailEnabled;
+    
+    @Value("${app.base-url:http://localhost:8082}")
+    private String baseUrl;
     
     public void sendVerificationEmail(@NonNull String toEmail, @NonNull String token) {
+        String verificationUrl = baseUrl + "/api/auth/verify?token=" + token;
+        
+        if (!emailEnabled) {
+            System.out.println("📧 [EMAIL DISABLED] Verification email would be sent to: " + toEmail);
+            System.out.println("🔗 Verification URL: " + verificationUrl);
+            System.out.println("🔑 Verification Token: " + token);
+            return;
+        }
+        
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
             helper.setTo(toEmail);
             helper.setSubject("Verify your SmartSpend account");
             
             Context context = new Context();
-            context.setVariable("verificationUrl", "http://localhost:8080/api/auth/verify?token=" + token);
+            context.setVariable("verificationUrl", verificationUrl);
             String htmlContent = templateEngine.process("verification-email", context);
             
             helper.setText(htmlContent, true);
             
             mailSender.send(message);
+            System.out.println("✅ Verification email sent to: " + toEmail);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send verification email", e);
+            System.err.println("❌ Failed to send verification email: " + e.getMessage());
+            System.out.println("🔗 Manual verification URL: " + verificationUrl);
         }
     }
     
     public void sendBudgetWarningEmail(@NonNull String userEmail, @NonNull Budget budget, double utilization) {
+        if (!emailEnabled) {
+            System.out.println("📧 [EMAIL DISABLED] Budget warning for: " + userEmail);
+            System.out.println("💰 Category: " + budget.getCategory() + ", Utilization: " + String.format("%.2f", utilization) + "%");
+            return;
+        }
+        
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
             helper.setTo(userEmail);
             helper.setSubject("Budget Warning - " + budget.getCategory());
@@ -66,14 +87,20 @@ public class EmailService {
             
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send budget warning email", e);
+            System.err.println("❌ Failed to send budget warning email: " + e.getMessage());
         }
     }
     
     public void sendBudgetExceededEmail(@NonNull String userEmail, @NonNull Budget budget, double utilization) {
+        if (!emailEnabled) {
+            System.out.println("📧 [EMAIL DISABLED] Budget exceeded for: " + userEmail);
+            System.out.println("💰 Category: " + budget.getCategory() + ", Utilization: " + String.format("%.2f", utilization) + "%");
+            return;
+        }
+        
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
             helper.setTo(userEmail);
             helper.setSubject("Budget Exceeded - " + budget.getCategory());
@@ -88,7 +115,7 @@ public class EmailService {
             
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send budget exceeded email", e);
+            System.err.println("❌ Failed to send budget exceeded email: " + e.getMessage());
         }
     }
     
@@ -96,9 +123,15 @@ public class EmailService {
                                        Double totalIncome, Double totalExpenses, 
                                        List<BudgetStatus> budgetStatus, 
                                        List<CategorySpending> topCategories) {
+        if (!emailEnabled) {
+            System.out.println("📧 [EMAIL DISABLED] Monthly summary for: " + userEmail);
+            System.out.println("📊 Month: " + month + "/" + year + ", Income: " + totalIncome + ", Expenses: " + totalExpenses);
+            return;
+        }
+        
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
             helper.setTo(userEmail);
             helper.setSubject("Your Monthly Financial Summary - " + month + "/" + year);
@@ -119,11 +152,14 @@ public class EmailService {
             
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send monthly summary email", e);
+            System.err.println("❌ Failed to send monthly summary email: " + e.getMessage());
         }
     }
     
-    // Static inner DTO classes (keep the same)
+    public boolean isEmailConfigured() {
+        return emailEnabled;
+    }
+    
     public static class BudgetStatus {
         private Category category;
         private Double amount;

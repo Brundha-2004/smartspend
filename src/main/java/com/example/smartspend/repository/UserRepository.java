@@ -10,6 +10,8 @@ import com.example.smartspend.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-    Boolean existsByEmail(String email);
-    Optional<User> findByVerificationToken(String token);
+    
+    boolean existsByEmail(String email);
+    
+    Optional<User> findByVerificationToken(String verificationToken);
 }

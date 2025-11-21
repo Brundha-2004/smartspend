@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Details - SmartSpend</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333; padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 20px; padding: 30px; margin-bottom: 25px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .logo { font-size: 2rem; font-weight: bold; color: #667eea; margin-bottom: 10px; }
+        .nav-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+        .btn { 
+            padding: 10px 20px; border: none; border-radius: 10px; font-size: 0.9rem; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; 
+            display: inline-block; 
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-secondary { background: rgba(102, 126, 234, 0.1); color: #667eea; border: 2px solid #667eea; }
+        
+        .budget-details {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💰 Budget Details</div>
+            <div class="nav-buttons">
+                <a th:href="@{/budgets}" class="btn btn-secondary">← Back to Budgets</a>
+                <a th:href="@{/}" class="btn btn-secondary">🏠 Home</a>
+            </div>
+        </div>
+
+        <div class="budget-details">
+            <div class="detail-item">
+                <div class="detail-label">Category</div>
+                <div class="detail-value" th:text="${budget.category}">Category</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Budget Amount</div>
+                <div class="detail-value" th:text="'$' + ${#numbers.formatDecimal(budget.amount, 1, 2)}">$0.00</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Period</div>
+                <div class="detail-value" th:text="${budget.month} + '/' + ${budget.year}">Month/Year</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="detail-label">Budget Utilization</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" th:style="'width: ' + ${utilization} + '%;'"></div>
+                </div>
+                <div class="detail-value" th:text="${utilization} + '%'">0%</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

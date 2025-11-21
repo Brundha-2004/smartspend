@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSpend - API Information</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh; color: #333; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { 
+            background: rgba(255, 255, 255, 0.95); border-radius: 20px; 
+            padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .logo { font-size: 2.5rem; font-weight: bold; color: #f5576c; margin-bottom: 10px; text-align: center; }
+        .nav-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .btn { 
+            padding: 10px 25px; border: none; border-radius: 50px; font-size: 0.9rem; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; 
+            display: inline-block; 
+        }
+        .btn-primary { background: linear-gradient(135deg, #f5576c, #f093fb); color: white; }
+        .btn-secondary { background: rgba(245, 87, 108, 0.1); color: #f5576c; border: 2px solid #f5576c; }
+        .btn-success { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .api-info { 
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 30px; 
+            margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        .section-title { 
+            font-size: 1.5rem; font-weight: 600; color: #f5576c; margin-bottom: 20px; 
+            border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;
+        }
+        .endpoint-list { display: grid; gap: 15px; }
+        .endpoint { 
+            background: #f8f9fa; border-left: 4px solid #f5576c; border-radius: 8px; 
+            padding: 20px; transition: transform 0.2s ease;
+        }
+        .endpoint:hover { transform: translateX(5px); }
+        .method { 
+            display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; 
+            font-weight: bold; margin-right: 10px; color: white;
+        }
+        .method.get { background: #61affe; }
+        .method.post { background: #49cc90; }
+        .method.put { background: #fca130; }
+        .method.delete { background: #f93e3e; }
+        .url { 
+            font-family: 'Courier New', monospace; background: #2d2d2d; color: #fff; 
+            padding: 8px 12px; border-radius: 6px; margin: 10px 0; display: block; font-size: 0.9rem;
+        }
+        .description { color: #666; line-height: 1.5; }
+        .auth-badge {
+            display: inline-block;
+            background: #ffeb3b;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔧 API Information</div>
+            <div class="nav-buttons">
+                <a th:href="@{/}" class="btn btn-secondary">← Back to Home</a>
+                <a th:href="@{/public/health}" class="btn btn-primary">Health Check</a>
+                <a th:href="@{/auth/login}" class="btn btn-success">Sign In</a>
+                <a th:href="@{/auth/register}" class="btn btn-primary">Register</a>
+            </div>
+
+            <div class="api-info">
+                <div class="section-title">Authentication Endpoints</div>
+                <div class="endpoint-list">
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <strong>User Registration</strong>
+                        <code class="url">http://localhost:8080/auth/register</code>
+                        <div class="description">
+                            Register a new user account. Requires email, password, first name, and last name.
+                        </div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <strong>User Login</strong>
+                        <code class="url">http://localhost:8080/auth/login</code>
+                        <div class="description">
+                            Authenticate user and receive JWT token for subsequent requests.
+                        </div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <strong>Email Verification</strong>
+                        <code class="url">http://localhost:8080/auth/verify?token=VERIFICATION_TOKEN</code>
+                        <div class="description">
+                            Verify user email address using the token sent during registration.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-info">
+                <div class="section-title">Public Endpoints</div>
+                <div class="endpoint-list">
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <strong>Home Page</strong>
+                        <code class="url">http://localhost:8080/</code>
+                        <div class="description">Application home page with dashboard and navigation</div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <strong>API Information</strong>
+                        <code class="url">http://localhost:8080/info</code>
+                        <div class="description">Detailed API documentation and endpoint information</div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <strong>Health Check</strong>
+                        <code class="url">http://localhost:8080/public/health</code>
+                        <div class="description">API health status and server information</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-info">
+                <div class="section-title">Protected Endpoints <span class="auth-badge">JWT REQUIRED</span></div>
+                <div class="endpoint-list">
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <strong>Get All Budgets</strong>
+                        <code class="url">http://localhost:8080/budgets</code>
+                        <div class="description">Retrieve all budgets for the authenticated user</div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <strong>Create Budget</strong>
+                        <code class="url">http://localhost:8080/budgets</code>
+                        <div class="description">Create a new budget for the authenticated user</div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <strong>Get All Expenses</strong>
+                        <code class="url">http://localhost:8080/expenses</code>
+                        <div class="description">Retrieve all expenses for the authenticated user</div>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <strong>Create Expense</strong>
+                        <code class="url">http://localhost:8080/expenses</code>
+                        <div class="description">Create a new expense for the authenticated user</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
